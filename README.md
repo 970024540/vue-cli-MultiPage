@@ -46,7 +46,7 @@ npm run dev
 
 ### vue-cli搭建的脚手架设置多页面原理，此次搭建的是写死的配置，后期添加动态方法
 
-* 效果图：
+#### 效果图：
 ![mse.html](./src/assets/mse.jpg)
 ![from.html](./src/assets/from.png)
 ![common.html](./src/assets/common.jpg)
