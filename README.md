@@ -65,7 +65,7 @@ entry: {
 ```
 ###### 运行、编译的时候每一个入口都会对应一个Chunk
 
-#### dev环境部署
+### dev环境部署
 
 ###### 修改 webpack.dev.conf.js
 * 打开 ~\build\webpack.dev.conf.js ，在plugins下找到new HtmlWebpackPlugin，在其后面添加对应的多页，并为每个页面添加Chunk配置
@@ -90,9 +90,11 @@ entry: {
         chunks: ['common']
       }),
 ```
-* chunks: ['app']中的app对应的是webpack.base.conf.js中entry设置的入口文件
+* chunks: ['mse']中的mse对应的是webpack.base.conf.js中entry设置的入口文件
 
-#### prod环境部署
+#####修改完了以后再根据此项目目录结构对应修改，重新npm run dev 下，然后出入对应html即可出现
+
+### prod环境部署
 
 ###### 打开~\config\index.js，找到build下的index: path.resolve(__dirname, '../dist/index.html')，在其后添加多页
 
@@ -149,5 +151,6 @@ entry: {
         }),
     ]
 ```
+###### 这样，生产环境配置就修改完了，是不是没想象中这么麻烦呢，哈哈。现在打包npm run build 。如果出错了请检查自己的修改的是不是哪里写错了。一般是没问题的，本人亲测有效。打包好之后就丢进服务器里，访问即可看到效果啦！！！
 
-* 这是基于脚手架之多页面搭建的原理，后面会更新添加动态方法
+* 这是基于脚手架之多页面搭建的原理，都是用死方法写的，下次更新我会把他动态出来。到时候配置好，你就不用管其他，只需要添加文件夹，入口文件即可。
