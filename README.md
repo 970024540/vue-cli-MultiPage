@@ -1,4 +1,5 @@
-# vue-cli如何搭建多页面
+## vue-cli如何搭建多页面
+* 我把html部分都放到了./html里面，把入口文件都放到了./src/entry/这个文件夹下面，方便统一管理，现在我们先安装好脚手架
 ### 本地先安装vue脚手架
 ```
 npm install vue-cli
@@ -41,6 +42,7 @@ npm install
 ```
 npm run dev
 ```
+* 然后访问http://localhost:8080 //默认端口为8080，访问失败可以是端口被占用了，在config/index.js里改dev:{port}，换一个端口尝试
 
 ### vue-cli搭建的脚手架设置多页面原理，此次搭建的是写死的配置，后期添加动态方法
 
