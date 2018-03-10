@@ -46,8 +46,8 @@ npm run dev
 
 * 效果图：
 ![mse.html](./src/assets/mse.jpg)
-![from.html](./src/assets/from.jpg)
-![common.html](./src/assets/common.jpg)
+![from.html](./src/assets/from.png)
+![common.html](./src/assets/common.png)
 
 #### 多页面布置分dev环境跟prod环境
 ##### 首先是公共配置
