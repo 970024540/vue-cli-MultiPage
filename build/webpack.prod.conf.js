@@ -63,26 +63,46 @@ const webpackConfig = merge(baseWebpackConfig, {
     // you can customize output by editing /index.html
     // see https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
-      filename: process.env.NODE_ENV === 'testing'
-        ? 'index.html'
-        : config.build.index,
-      template: 'index.html',
+      filename: config.build.mse,
+      template: './html/mse.html',
       inject: true,
       minify: {
         removeComments: true,
         collapseWhitespace: true,
         removeAttributeQuotes: true
-        // more options:
-        // https://github.com/kangax/html-minifier#options-quick-reference
       },
-      // necessary to consistently work with multiple chunks via CommonsChunkPlugin
-      chunksSortMode: 'dependency'
+      chunksSortMode: 'dependency',
+      chunks: ['manifest','vendor','mse']
     }),
+    new HtmlWebpackPlugin({
+        filename: config.build.from,
+        template: './html/from.html',
+        inject: true,
+        minify: {
+          removeComments: true,
+          collapseWhitespace: true,
+          removeAttributeQuotes: true
+        },
+        chunksSortMode: 'dependency',
+        chunks: ['manifest','vendor','from']
+      }),
+      new HtmlWebpackPlugin({
+        filename: config.build.common,
+        template: './html/common.html',
+        inject: true,
+        minify: {
+          removeComments: true,
+          collapseWhitespace: true,
+          removeAttributeQuotes: true
+        },
+        chunksSortMode: 'dependency',
+        chunks: ['manifest','vendor','common']
+      }),
     // keep module.id stable when vendor modules does not change
     new webpack.HashedModuleIdsPlugin(),
     // enable scope hoisting
     new webpack.optimize.ModuleConcatenationPlugin(),
-    // split vendor js into its own file
+    // vendor模块是指提取涉及node_modules中的公共模块
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
       minChunks (module) {
@@ -97,7 +117,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       }
     }),
     // extract webpack runtime and module manifest to its own file in order to
-    // prevent vendor hash from being updated whenever app bundle is updated
+    // manifest模块是对vendor模块做的缓存
     new webpack.optimize.CommonsChunkPlugin({
       name: 'manifest',
       minChunks: Infinity

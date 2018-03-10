@@ -12,8 +12,11 @@ function resolve (dir) {
 
 module.exports = {
   context: path.resolve(__dirname, '../'),
+  //多页面入口,文件开始路径为项目初始路径
   entry: {
-    app: './src/main.js'
+    mse: './src/entry/mse.js',
+    from: './src/entry/from.js',
+    common: './src/entry/common.js',
   },
   output: {
     path: config.build.assetsRoot,

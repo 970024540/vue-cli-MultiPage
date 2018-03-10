@@ -53,10 +53,23 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new webpack.NoEmitOnErrorsPlugin(),
     // https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: 'index.html',
-      inject: true
+      filename: 'mse.html',//访问地址
+      template: './html/mse.html',//来源路径
+      inject: true,
+      chunks: ['mse']//入口文件，在base里的入口参数entry配置
     }),
+    new HtmlWebpackPlugin({
+        filename: 'from.html',
+        template: './html/from.html',
+        inject: true,
+        chunks: ['from']
+      }),
+      new HtmlWebpackPlugin({
+        filename: 'common.html',
+        template: './html/common.html',
+        inject: true,
+        chunks: ['common']
+      }),
     // copy custom static assets
     new CopyWebpackPlugin([
       {

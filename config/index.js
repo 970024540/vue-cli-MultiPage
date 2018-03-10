@@ -38,7 +38,9 @@ module.exports = {
 
   build: {
     // Template for index.html
-    index: path.resolve(__dirname, '../dist/index.html'),
+    mse: path.resolve(__dirname, '../dist/mse.html'),
+    from: path.resolve(__dirname, '../dist/from.html'),
+    common: path.resolve(__dirname, '../dist/common.html'),
 
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),

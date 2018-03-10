@@ -1,8 +1,7 @@
 <template>
   <div id="app">
     <img src="./assets/logo.png">
-        <h1>1页面</h1>
-
+    <h1>3页面</h1>
     <router-view/>
   </div>
 </template>
