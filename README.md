@@ -258,10 +258,14 @@ build: {
 ```
 #### 现在的项目结构，如果添加多一个页面，步骤为
 
-```> 1 html/下新建文件 iflow.html
-> 2 src/下新建文件夹 iflow
-                        /app/App.vue 
-                        /routes/router.vue 
-> 3 entry/新建文件 iflow.js```
+```
+> 1 html/下新建文件 iflow.html
+> 2 src/下新建文件夹及内容 iflow/
+                           /app/App.vue 
+                           /routes/router.vue 
+> 3 entry/新建文件 iflow.js
+```
+### 这样的好处就是每个页面的router都是独立的，如果想只需要一个路由，那么应该在入口文件中都引入同一个路由就行了，理论上应该是这样，各位可以试试。
+
 
 ### 这样就可以了，如果不清楚哪里修改请查看源代码。
