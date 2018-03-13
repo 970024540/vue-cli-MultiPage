@@ -195,12 +195,14 @@ exports.entries = function() {
 }
 ```
 * 详情查看源代码
+```
 //多页面入口,文件开始路径为项目初始路径
 //   entry: {
 //     mse: './src/entry/mse.js',
 //     from: './src/entry/from.js',
 //     login: './src/entry/login.js',
 //   },
+```
 //动态设置多页面入口
 entry: utils.entries(),
 
@@ -256,10 +258,10 @@ build: {
 ```
 #### 现在的项目结构，如果添加多一个页面，步骤为
 
-> 1 html/下新建文件 iflow.html
+```> 1 html/下新建文件 iflow.html
 > 2 src/下新建文件夹 iflow
                         /app/App.vue 
                         /routes/router.vue 
-> 3 entry/新建文件 iflow.js
+> 3 entry/新建文件 iflow.js```
 
 ### 这样就可以了
