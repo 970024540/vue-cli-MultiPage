@@ -1,8 +1,8 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-import App from '../mse/app/App'
-import router from '../mse/routes/router'
+import App from '../iflow/app/App'
+import router from '../iflow/routes/router'
 
 Vue.config.productionTip = false
 

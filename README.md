@@ -159,3 +159,107 @@ entry: {
 ###### 这样，生产环境配置就修改完了，是不是没想象中这么麻烦呢，哈哈。现在打包npm run build 。如果出错了请检查自己的修改的是不是哪里写错了。一般是没问题的，本人亲测有效。打包好之后就丢进服务器里，访问即可看到效果啦！！！
 
 * 这是基于脚手架之多页面搭建的原理，都是用死方法写的，下次更新我会把他动态出来。到时候配置好，你就不用管其他，只需要添加文件夹，入口文件即可。
+
+>---------------------------------------------------------------------------------------------------------
+
+## 如何设置动态多页面
+
+### 首先我们需要用到几个插件
+
+```
+// utils.js
+// 引入页面模版
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+// 用于做相应的merge处理
+const merge = require('webpack-merge')
+// 取得/src/entry下的所有入口文件
+var PAGE_PATH = path.resolve(__dirname, '../src/entry')
+// 取得/html下的所有html文件
+var PAGE_HTML_PATH = path.resolve(__dirname, '../html')
+```
+
+
+#### 然后我们在utils.js里面添加两个动态获取入口/页面的方法
+
+* 定义entries方法动态在webpack.base.conf.js里动态设置多页面入口
+```
+//动态设置多页面入口
+exports.entries = function() {
+    var entryFiles = glob.sync(PAGE_PATH + '/*.js')//获取当前路径下所有.js的文件
+    var map = {}
+    entryFiles.forEach((filePath) => {
+        var filename = filePath.substring(filePath.lastIndexOf('\/') + 1, filePath.lastIndexOf('.'))
+        map[filename] = filePath
+    })
+    return map
+}
+```
+* 详情查看源代码
+//多页面入口,文件开始路径为项目初始路径
+//   entry: {
+//     mse: './src/entry/mse.js',
+//     from: './src/entry/from.js',
+//     login: './src/entry/login.js',
+//   },
+//动态设置多页面入口
+entry: utils.entries(),
+
+* 定义htmlPlugin方法，用来获取html进行动态设置webpack
+```
+//动态获取html文件 与上面的多页面入口配置相同，读取html文件夹下的对应的html后缀文件，然后放入数组中
+exports.htmlPlugin = function() {
+    let entryHtml = glob.sync(PAGE_HTML_PATH + '/*.html')
+    let arr = []
+    entryHtml.forEach((filePath) => {
+        let filename = filePath.substring(filePath.lastIndexOf('\/') + 1, filePath.lastIndexOf('.'))
+        let conf = {
+            // 文件名称
+            filename: filename + '.html',
+            // 模板来源
+            template: filePath,
+            // 页面模板需要加对应的js脚本，如果不加这行则每个页面都会引入所有的js脚本
+            chunks: ['manifest', 'vendor', filename],
+            inject: true
+        }
+        if (process.env.NODE_ENV === 'production') {//生产环境
+            conf = merge(conf, {
+                //压缩HTML文件
+                minify: {
+                    removeComments: true,
+                    collapseWhitespace: true,
+                    removeAttributeQuotes: true
+                },
+                //按照模块的依赖关系依次加载，即：manifest，vendor，本页面入口，其他页面入口.
+                chunksSortMode: 'dependency'
+            })
+        }
+        console.log(conf)
+        arr.push(new HtmlWebpackPlugin(conf))
+    })
+    return arr
+}
+```
+* 在webpack.dev.conf.js和webpack.prod.conf.js中都添加下面代码
+* 在plugins数组后面添加此方法
+```
+plugins: [].concat(utils.htmlPlugin())
+```
+#### 这样就完成了动态设置，此时在config/index.js中注释掉下面代码就行了
+```
+build: {
+    // Template for index.html
+    // mse: path.resolve(__dirname, '../dist/mse.html'),
+    // from: path.resolve(__dirname, '../dist/from.html'),
+    // login: path.resolve(__dirname, '../dist/login.html'),
+
+    ...}
+```
+#### 现在的项目结构，如果添加多一个页面，步骤为
+
+> 1 html/下新建文件 iflow.html
+> 2 src/下新建文件夹 iflow
+                        /app/App.vue 
+                        /routes/router.vue 
+> 3 entry/新建文件 iflow.js
+
+### 这样就可以了

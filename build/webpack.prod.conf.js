@@ -62,42 +62,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     // generate dist index.html with correct asset hash for caching.
     // you can customize output by editing /index.html
     // see https://github.com/ampedandwired/html-webpack-plugin
-    new HtmlWebpackPlugin({
-      filename: config.build.mse,
-      template: './html/mse.html',
-      inject: true,
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        removeAttributeQuotes: true
-      },
-      chunksSortMode: 'dependency',
-      chunks: ['manifest','vendor','mse']
-    }),
-    new HtmlWebpackPlugin({
-        filename: config.build.from,
-        template: './html/from.html',
-        inject: true,
-        minify: {
-          removeComments: true,
-          collapseWhitespace: true,
-          removeAttributeQuotes: true
-        },
-        chunksSortMode: 'dependency',
-        chunks: ['manifest','vendor','from']
-      }),
-      new HtmlWebpackPlugin({
-        filename: config.build.common,
-        template: './html/common.html',
-        inject: true,
-        minify: {
-          removeComments: true,
-          collapseWhitespace: true,
-          removeAttributeQuotes: true
-        },
-        chunksSortMode: 'dependency',
-        chunks: ['manifest','vendor','common']
-      }),
+
     // keep module.id stable when vendor modules does not change
     new webpack.HashedModuleIdsPlugin(),
     // enable scope hoisting
@@ -140,7 +105,48 @@ const webpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       }
     ])
-  ]
+    // new HtmlWebpackPlugin({
+    //   filename: config.build.mse,
+    //   template: './html/mse.html',
+    //   inject: true,
+    //   minify: {//压缩HTML文件
+    //     removeComments: true,//移除HTML中的注释
+    //     collapseWhitespace: true,//删除空白符与换行符
+    //     removeAttributeQuotes: true
+    //   },
+    //   //按照模块的依赖关系依次加载，即：manifest，vendor，本页面入口，其他页面入口.
+    //   chunksSortMode: 'dependency',
+    //   //manifest模块是对vendor模块做的缓存
+    //   //vendor模块是指提取涉及node_modules中的公共模块
+    //   chunks: ['manifest','vendor','mse']
+    // }),
+    // new HtmlWebpackPlugin({
+    //     filename: config.build.from,
+    //     template: './html/from.html',
+    //     inject: true,
+    //     minify: {
+    //       removeComments: true,
+    //       collapseWhitespace: true,
+    //       removeAttributeQuotes: true
+    //     },
+    //     chunksSortMode: 'dependency',
+    //     chunks: ['manifest','vendor','from']
+    //   }),
+    //   new HtmlWebpackPlugin({
+    //     filename: config.build.login,
+    //     template: './html/login.html',
+    //     inject: true,
+    //     minify: {
+    //       removeComments: true,
+    //       collapseWhitespace: true,
+    //       removeAttributeQuotes: true
+    //     },
+    //     chunksSortMode: 'dependency',
+    //     chunks: ['manifest','vendor','login']
+    //   }),
+    
+    //动态设置多页面
+  ].concat(utils.htmlPlugin())
 })
 
 if (config.build.productionGzip) {

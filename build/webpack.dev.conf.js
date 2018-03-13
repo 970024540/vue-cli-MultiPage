@@ -52,24 +52,24 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
     new webpack.NoEmitOnErrorsPlugin(),
     // https://github.com/ampedandwired/html-webpack-plugin
-    new HtmlWebpackPlugin({
-      filename: 'mse.html',//访问地址
-      template: './html/mse.html',//来源路径
-      inject: true,
-      chunks: ['mse']//入口文件，在base里的入口参数entry配置
-    }),
-    new HtmlWebpackPlugin({
-        filename: 'from.html',
-        template: './html/from.html',
-        inject: true,
-        chunks: ['from']
-      }),
-      new HtmlWebpackPlugin({
-        filename: 'common.html',
-        template: './html/common.html',
-        inject: true,
-        chunks: ['common']
-      }),
+    // new HtmlWebpackPlugin({
+    //   filename: 'mse.html',//访问地址
+    //   template: './html/mse.html',//来源路径
+    //   inject: true,//js插入的位置，true/'head'  false/'body'
+    //   chunks: ['mse']//入口文件，在base里的入口参数entry配置
+    // }),
+    // new HtmlWebpackPlugin({
+    //     filename: 'from.html',
+    //     template: './html/from.html',
+    //     inject: true,
+    //     chunks: ['from']
+    //   }),
+    //   new HtmlWebpackPlugin({
+    //     filename: 'login.html',
+    //     template: './html/login.html',
+    //     inject: true,
+    //     chunks: ['login']
+    //   }),
     // copy custom static assets
     new CopyWebpackPlugin([
       {
@@ -78,7 +78,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       }
     ])
-  ]
+    //动态设置多页面
+  ].concat(utils.htmlPlugin())
 })
 
 module.exports = new Promise((resolve, reject) => {
