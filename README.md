@@ -269,3 +269,163 @@ build: {
 
 
 ### 这样就可以了，如果不清楚哪里修改请查看源代码。
+
+> -----------------------------------------------------------------------------------------------
+
+## 第三次更，添加了axios,已经本地代理功能
+
+### axios，是尤大大在vue2中推荐使用的请求方式，所以在这个项目中，我也加了此功能，用来请求数据
+
+#### 首先我们先安装axios
+```
+//--save 发布后还需要依赖的模块
+//--save-dev 开发才用到它。
+npm install axios --save 
+```
+
+##### 然后我们在/config此文件夹下新建 http.js
+
+* 之所以在这里建立http.js，是想独立开这个axios这个功能，方便管理
+
+然后引入我们安装好的axios
+```
+import axios from 'axios';//引入axios
+
+import NProgress from 'nprogress'; //引入进度条插件 ，npm install --save nprogress
+import 'nprogress/nprogress.css'; // 引入进度条css文件，相对路径即可
+
+
+//axios 基本配置
+axios.defaults.timeout = 50000;//请求超时时间
+axios.defaults.withCredentials = true;//运行跨域
+//设置头部信息
+axios.defaults.headers.common['Cache-Control'] = "no-cache";
+axios.defaults.headers.common['Pragma'] = "no-cache";
+```
+然后我们在这个文件加上拦截器
+
+```
+//添加一个请求拦截器
+axios.interceptors.request.use(function(config){
+    //在请求发出之前进行一些操作
+    NProgress.start();//进度条开始
+    return config;
+  },function(error){
+    NProgress.done();//进度条结束
+    //Do something with request error
+    return Promise.reject(error);
+});
+
+//添加一个响应拦截器
+  axios.interceptors.response.use(function(res){
+    //在这里对返回的数据进行处理
+    NProgress.done();
+    return res;
+  },function(error){
+    NProgress.done();
+    if (error.response) {
+        switch (error.response.status) {
+            case 401:
+                console.log('接口返回401，请查看是否未登录。跳至登录页面')
+        }
+    }
+    //Do something with response error
+    return Promise.reject(error);
+  })
+
+   export default axios;//最后我们要对axios导出去使用
+```
+
+##### 现在我们已经对axios准备完毕了，然后我们就可以使用啦。。
+
+#### 这个时候就涉及到接口问题了，现在这个项目中有两个环境，本地环境跟生产环境，而接口在本地会出现跨域问题，我们先要解决跨域问题
+##### 我们在config/index.js这里配置代理
+
+```
+dev{
+    //设置代理
+    proxyTable: {
+        '/operation/':{//将这个应用名下的请求转接为http://apiv2.pinduoduo.com下
+            target: 'http://apiv2.pinduoduo.com/',
+            secure: false
+        },
+        //如果多个不同的接口那就再加就行了，例如
+        <!-- '/api/':{
+            target: 'http:baidu.com/',
+            secure: false
+        }... -->
+    },
+}
+
+```
+* 这样本地代理就完成了，那生产环境呢，这个一般我们打包好了项目丢到服务器中不会出现跨域问题，如果有的话让后端设置对应的处理就行了,所以我们在生产环境中基本不需要管跨域的问题.
+
+###### 不过我们需要区分开本地环境跟生产环境的域名，所以这时候我们还需要在config/下的额dev.env.js跟prod.env.js中设置对应的域名
+
+* 拿拼多多接口为例，在这两个文件中我们添加多一个字段，用来区分不同环境对应不同域名
+```
+// dev.env.js
+API_pingDuo:"/operation/",//因为配置了代理，所以本地只需要配应用名就行了
+
+//prod.env.js
+API_pingDuo:'"http://apiv2.pinduoduo.com/operation/"',//生成环境需要放到对应服务器方可请求，否则报错。
+```
+#### 现在我们的环境问题也已经解决了，接下来我们就开始准备使用请求接口啦。。。
+
+###### 我们在src/下新建api目录，在里面再新建api.js跟main.js
+* api.js是用来专门放api用的
+* main.js 是专门用来放请求用的，网上很多都是说把axios挂在vue的原型中，在组件中使用，这样个人觉得不方便管理，我们应该把每个功能点独立开来，这样方便我们后期的维护
+
+在api.js,在网上找到一个拼多多接口，不需要token校验，所以在本项目中拿来使用，勿怪勿怪。
+```
+//专门定义api
+export const pingDuo = process.env.API_pingDuo + '1284/groups?';
+
+```
+在main.js中写各种接口
+```
+import * as api from './api'; //引入我们的所有接口
+import axios from '../../config/http';//引入我们加了拦截的axios
+import qs from 'querystring';// 这个是下载axios自动安装的，我们直接使用即可，他是用来为我们处理接口数据的
+
+
+export const requestpingDuo = params => {
+    return axios.get(api.pingDuo+qs.stringify(params)).then(res => res.data);
+};
+
+```
+#### 这样我们的接口就写好啦，现在就开始使用咯
+* 我在mse.html里面进行演示
+在src/mse/app/App.vue里面我们加入对应的按钮
+```
+<template>
+<button @click="btnClick2">点我请求数据拼多多</button>
+<ul v-for="(item,index) in pinDuoList">
+    <li>{{item.goods_name}}</li>
+</ul>
+</template>
+<script>
+    methods:{
+        //定义点击按钮事件，发送请求
+        btnClick2(){
+            let params={
+                opt_type:1,
+                offset:0,
+                size:50
+            }
+            requestpingDuo(params).then(res=>{
+                if(res){
+                    this.pinDuoList=res.goods_list;
+                }
+            })
+        },
+    }
+</script>
+```
+
+> ---------------------------------------------------------------------------------------------------
+###### 效果图
+
+![axios](./src/assets/axios.png)
+
+* 这样就实现了请求接口啦，下一次更新会上如何规避打包时不需要打包的页面

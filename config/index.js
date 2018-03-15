@@ -19,8 +19,13 @@ module.exports = {
     errorOverlay: true,
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
-
-    
+    //设置代理
+    proxyTable: {
+        '/operation/':{
+            target: 'http://apiv2.pinduoduo.com/',
+            secure: false
+        },
+    },
     /**
      * Source Maps
      */
@@ -45,7 +50,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: './',
 
     /**
      * Source Maps
