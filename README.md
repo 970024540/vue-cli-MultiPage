@@ -439,10 +439,10 @@ export const requestpingDuo = params => {
 ##### 首先我们先定义不需要打包的模块
 在build/build.js中定义，我们拿login这个模块来做实验
 ```
-process.env.filterSystem = ["login"]//过滤不打包系统
+process.env.filterSystem = ["login"]//过滤不打包模块
 ```
 ##### 然后我们在我们的公共方法里面修改下配置
-在utils.js里面修改入口文件方法，只设置这个filterSystem里面没有的内容，有的话跳过
+在utils.js里面修改入口文件方法
 ```
 //动态设置多页面入口
 exports.entries = function() {
@@ -451,7 +451,8 @@ exports.entries = function() {
     entryFiles.forEach((filePath) => {
         var filename = filePath.substring(filePath.lastIndexOf('\/') + 1, filePath.lastIndexOf('.'))
         if(process.env.NODE_ENV === 'production'){//生产环境过滤不打包系统
-            if (process.env.filterSystem.indexOf(filename) < 0) {
+            //判断设置的入口模块名不在filterSystem这里才进行追加
+            if (process.env.filterSystem.indexOf(filename) < 0) {
                 map[filename] = filePath
             }
         }
