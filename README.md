@@ -429,3 +429,75 @@ export const requestpingDuo = params => {
 ![axios](./src/assets/axios.png)
 
 * 这样就实现了请求接口啦，下一次更新会上如何规避打包时不需要打包的页面
+
+
+> ---------------------------------------------------------------------------------------------------
+### 第四次更新，过滤不需要打包的模块
+
+* 场景：很多时候我们在打包时候很多模块是需要重复打包的，所以我们应该定义这个功能
+
+##### 首先我们先定义不需要打包的模块
+在build/build.js中定义，我们拿login这个模块来做实验
+```
+process.env.filterSystem = ["login"]//过滤不打包系统
+```
+##### 然后我们在我们的公共方法里面修改下配置
+在utils.js里面修改入口文件方法，只设置这个filterSystem里面没有的内容，有的话跳过
+```
+//动态设置多页面入口
+exports.entries = function() {
+    var entryFiles = glob.sync(PAGE_PATH + '/*.js')//获取当前路径下所有.js的文件
+    var map = {}
+    entryFiles.forEach((filePath) => {
+        var filename = filePath.substring(filePath.lastIndexOf('\/') + 1, filePath.lastIndexOf('.'))
+        if(process.env.NODE_ENV === 'production'){//生产环境过滤不打包系统
+            if (process.env.filterSystem.indexOf(filename) < 0) {
+                map[filename] = filePath
+            }
+        }
+    })
+    return map
+}
+```
+然后我们在获取html中也进行一些修改，
+```
+//动态获取html文件 与上面的多页面入口配置相同，读取html文件夹下的对应的html后缀文件，然后放入数组中
+exports.htmlPlugin = function() {
+    let entryHtml = glob.sync(PAGE_HTML_PATH + '/*.html')
+    let arr = []
+    entryHtml.forEach((filePath) => {
+        let filename = filePath.substring(filePath.lastIndexOf('\/') + 1, filePath.lastIndexOf('.'))
+        let conf = {
+            // 文件名称
+            filename: filename + '.html',
+            // 模板来源
+            template: filePath,
+            // 页面模板需要加对应的js脚本，如果不加这行则每个页面都会引入所有的js脚本
+            chunks: ['manifest', 'vendor', filename],
+            inject: true
+        }
+        if (process.env.NODE_ENV === 'production') {//生产环境
+            //找到里面存在对应的模块，使其跳过即可
+            if (process.env.filterSystem.indexOf(filename) >= 0) {//过滤不需要打包系统
+                return ;
+            }
+            conf = merge(conf, {
+                //压缩HTML文件
+                minify: {
+                    removeComments: true,
+                    collapseWhitespace: true,
+                    removeAttributeQuotes: true
+                },
+                //按照模块的依赖关系依次加载，即：manifest，vendor，本页面入口，其他页面入口.
+                chunksSortMode: 'dependency'
+            })
+        }
+        console.log(conf)
+        arr.push(new HtmlWebpackPlugin(conf))
+    })
+    return arr
+}
+```
+* 然后我们删除dist/这个文件夹下面的文件，重新打包 npm run build
+打包完成以后你会发现没有login.html了，在static中也没有对应的css跟js了
+#### 这样就实现了我们打包时过滤不需要打包的模块了

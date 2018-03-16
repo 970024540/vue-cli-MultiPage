@@ -19,7 +19,11 @@ exports.entries = function() {
     var map = {}
     entryFiles.forEach((filePath) => {
         var filename = filePath.substring(filePath.lastIndexOf('\/') + 1, filePath.lastIndexOf('.'))
-        map[filename] = filePath
+        if(process.env.NODE_ENV === 'production'){//生产环境过滤不打包系统
+            if (process.env.filterSystem.indexOf(filename) < 0) {
+                map[filename] = filePath
+            }
+        }
     })
     return map
 }
@@ -40,6 +44,9 @@ exports.htmlPlugin = function() {
             inject: true
         }
         if (process.env.NODE_ENV === 'production') {//生产环境
+            if (process.env.filterSystem.indexOf(filename) >= 0) {//过滤不需要打包系统
+                return ;
+            }
             conf = merge(conf, {
                 //压缩HTML文件
                 minify: {

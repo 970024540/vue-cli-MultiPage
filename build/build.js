@@ -3,6 +3,10 @@ require('./check-versions')()
 
 process.env.NODE_ENV = 'production'
 
+
+process.env.filterSystem = ["from"]//过滤不打包系统
+
+
 const ora = require('ora')
 const rm = require('rimraf')
 const path = require('path')
