@@ -19,10 +19,13 @@ exports.entries = function() {
     var map = {}
     entryFiles.forEach((filePath) => {
         var filename = filePath.substring(filePath.lastIndexOf('\/') + 1, filePath.lastIndexOf('.'))
+        console.log('111'+process)
         if(process.env.NODE_ENV === 'production'){//生产环境过滤不打包系统
             if (process.env.filterSystem.indexOf(filename) < 0) {
                 map[filename] = filePath
             }
+        }else{
+            map[filename] = filePath
         }
     })
     return map
