@@ -454,6 +454,8 @@ exports.entries = function() {
             //判断设置的入口模块名不在filterSystem这里才进行追加
             if (process.env.filterSystem.indexOf(filename) < 0) {
                 map[filename] = filePath
+            }else{
+                map[filename] = filePath
             }
         }
     })
